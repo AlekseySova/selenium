@@ -1,97 +1,46 @@
 package com.kit.homework.lesson23;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import com.kit.core.WebDriverTestBase;
+import com.kit.pages.GmailAccountPage;
+import com.kit.pages.GmailLoginPage;
+import com.kit.pages.GmailPasswordPage;
+
 import org.testng.annotations.Test;
 
-import java.util.concurrent.TimeUnit;
-
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 /**
- * Created by AlekseySova on 07.06.2017.
+ * Created by AlekseySova on 09.06.2017.
  */
-public class GmailSearchTest {
+public class GmailSearchTest extends WebDriverTestBase {
 
-    private String gmailSearch;
-    private WebDriver webDriver;
+    private String gmailSearch = "https://www.gmail.com";
+    private String gmailTitle = "Gmail";
+    private String mailPassword = "evwfevwf78";
+    private String mailName = "aaabbcc439";
+    private String emailAddress = "aaabbcc439@gmail.com";
 
-    @BeforeClass
+    @Test(enabled = false)
+    public void SearchTest(){
 
-    public void setUp(){
-        System.setProperty("webdriver.chrome.driver",
-                "C:\\Users\\Alex Owl\\IdeaProjects\\selenium\\src\\main\\resources\\chromedriver.exe");
+        GmailLoginPage gmailLoginPage = new GmailLoginPage(webDriver);
 
-        gmailSearch = "https://www.gmail.com";
-        webDriver = new ChromeDriver();
-        //Lunch GoogleChrome on gmail.com
-        webDriver.get(gmailSearch);
+        gmailLoginPage.openPage(gmailSearch);
 
-        webDriver.manage().window().maximize();
-        webDriver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-    }
+        gmailLoginPage.fillAndSubmitData(emailAddress);
 
+        GmailPasswordPage gmailPasswordPage = new GmailPasswordPage(webDriver);
 
-    @Test
-    public void gmailSearchTest(){
+        gmailPasswordPage.fillAndSubmitData(mailPassword);
 
-        Actions actions = new Actions(webDriver);
+        GmailAccountPage gmailAccountPage = new GmailAccountPage(webDriver);
 
-        //Data for test
-        String gmailTitle = "Gmail";
-        String mailPassword = "evwfevwf78";
-        String mailName = "aaabbcc439";
-        String emailAddress = "aaabbcc439@gmail.com";
-        By searchMailField1 = By.xpath(".//*[@id=\"identifierId\"][@class=\"whsOnd zHQkBf\"]");
-        By searchMailButton = By.xpath(".//*[@class=\"ZFr60d CeoRYc\"]");
-        By searchMailField2 = By.xpath(".//*[@class=\"whsOnd zHQkBf\"][@type=\"password\"]");
-        By accountMailLocator = By.xpath(".//*[@class=\"gb_8a gbii\"]");
-        By verifyMailLocator = By.xpath(".//*[@class=\"gb_wb\"]");
+        gmailAccountPage.enterToAccountInfo();
 
-        //Verify that it is gmail.com page
-        assertTrue(webDriver.getTitle().contains(gmailTitle));
-
-        WebElement mailField = webDriver.findElement(searchMailField1);
-        WebElement mailButton = webDriver.findElement(searchMailButton);
-
-        //Enter email name in field
-        mailField.sendKeys(mailName);
-
-        //Push button "next"
-        actions.moveToElement(mailButton).click().perform();
-
-        WebElement passField = webDriver.findElement(searchMailField2);
-
-        //Enter email password
-        passField.sendKeys(mailPassword);
-
-        WebElement mailButton2 = webDriver.findElement(searchMailButton);
-
-        //Push button "next"
-        actions.moveToElement(mailButton2).click().perform();
-
-
-        WebElement mailAccount = webDriver.findElement(accountMailLocator);
-
-        actions.moveToElement(mailAccount).click().perform();
-
-        WebElement verifyField = webDriver.findElement(verifyMailLocator);
-
-        //Verify that entering in right email account
-        assertEquals(emailAddress, verifyField.getText());
+        assertTrue(gmailAccountPage.getAccountName().contains(emailAddress));
 
     }
 
-    @AfterClass
-    public void closeUp(){
 
-        webDriver.close();
 
-    }
 }
